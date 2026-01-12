@@ -1,0 +1,5 @@
+vocab.py -> vocab.pkl 생성
+data_loader.py
+model.py
+train.py
+analysis_report.py
