@@ -26,7 +26,7 @@ class EncoderCNN(nn.Module):
             self.adaptive_pool = nn.AdaptiveAvgPool2d((1, 1))
             
         else:
-            raise ValueError(f"지원하지 않는 모델 타입: {encoder_type}. resnet18 또는 vit_s_16을 사용하세요.")
+            raise ValueError(f"지원하지 않는 모델 타입: {encoder_type}")
 
         # FC from scratch: 이 부분은 사전 학습되지 않은 상태로 초기화되어 학습됩니다.
         self.linear = nn.Linear(in_features, embed_size)

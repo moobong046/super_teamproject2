@@ -11,8 +11,7 @@ from model import CNNtoRNN
 
 # 1. 전역 설정
 CONFIG = {
-    # 사용할 엔코더 선택: resnet18, vit_s_16, mobilenet_v2
-    # resnet50, efficientnet_b0, efficientnet_b1, vit_b_16, convnext_t, swin_t
+    # 사용할 엔코더 선택: resnet18, mobilenet_v2
     "encoder_type": "mobilenet_v2", 
     
     "vocab_path": "vocab_3.pkl",
@@ -34,15 +33,6 @@ CONFIG = {
 }
 
 # 2. 엔코더 타입에 따른 최적 디코더 하이퍼파라미터 자동 설정 함수
-# def get_model_config(encoder_type):
-#     if "efficientnet" in encoder_type:
-#         return {"decoder_type": "gru", "embed_size": 256, "hidden_size": 512, "num_layers": 1}
-#     elif "vit" in encoder_type or "swin" in encoder_type:
-#         # Transformer 계열은 더 깊고 큰 디코더 권장
-#         return {"decoder_type": "lstm", "embed_size": 512, "hidden_size": 768, "num_layers": 2}
-#     else: # resnet, convnext 등
-#         return {"decoder_type": "lstm", "embed_size": 300, "hidden_size": 512, "num_layers": 1}
-
 def get_model_config(encoder_type):
     if encoder_type == "resnet18":
         # 가이드라인의 Show & Tell(NIC) 표준 조합
@@ -50,9 +40,6 @@ def get_model_config(encoder_type):
     elif encoder_type == "mobilenet_v2":
         # 경량 모델이므로 임베딩 사이즈를 약간 조정하거나 동일하게 유지하여 비교
         return {"decoder_type": "lstm", "embed_size": 300, "hidden_size": 512, "num_layers": 1}
-    elif encoder_type == "vit_s_16":
-        # Transformer 기반의 비교 실험 조합
-        return {"decoder_type": "gru", "embed_size": 384, "hidden_size": 512, "num_layers": 1}
     else:
         return {"decoder_type": "lstm", "embed_size": 256, "hidden_size": 512, "num_layers": 1}
 
@@ -99,8 +86,6 @@ def train():
         {'params': model.encoderCNN.bn.parameters(), 'lr': CONFIG["learning_rate"]},
         {'params': model.decoderRNN.parameters(), 'lr': CONFIG["learning_rate"]}
     ], lr=CONFIG["learning_rate"], weight_decay=0.01)
-    # resnet50, efficientnet_b0/b1, convnext_t -> 0.01
-    # vit_b_16, swin_t -> 0.05
 
     best_val_loss = float('inf') 
 
