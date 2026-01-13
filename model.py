@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 
-# 1. 통합 Encoder (ResNet-18 및 ViT-S/16 반영)
+# 1. Encoder
 class EncoderCNN(nn.Module):
     def __init__(self, embed_size, encoder_type="resnet18"):
         super(EncoderCNN, self).__init__()
@@ -34,17 +34,14 @@ class EncoderCNN(nn.Module):
         self.init_weights()
 
     def init_weights(self):
-        """FC 레이어 가중치 초기화 (from scratch)"""
+        # FC 레이어 가중치 초기화 (from scratch)
         self.linear.weight.data.normal_(0.0, 0.02)
         self.linear.bias.data.fill_(0)
 
     def forward(self, images):
         features = self.backbone(images)
         
-        if "vit" in self.encoder_type:
-            # ViT의 출력은 [Batch, Embed_Dim]
-            pass 
-        elif self.encoder_type == "mobilenet_v2":
+        if self.encoder_type == "mobilenet_v2":
             features = self.adaptive_pool(features)
             features = features.view(features.size(0), -1)
         else:
@@ -54,7 +51,7 @@ class EncoderCNN(nn.Module):
         features = self.bn(self.linear(features))
         return features
 
-# 2. 맞춤형 Decoder (Show & Tell / NIC 기반)
+# 2. Decoder (Show & Tell / NIC 기반)
 class DecoderRNN(nn.Module):
     def __init__(self, embed_size, hidden_size, vocab_size, num_layers=1, decoder_type="lstm"):
         super(DecoderRNN, self).__init__()
