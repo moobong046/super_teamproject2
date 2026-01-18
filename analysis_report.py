@@ -15,7 +15,7 @@ from data_loader import Vocabulary, get_loader
 from model import CNNtoRNN
 
 # 1. 경로 설정 (여기만 수정하면 됩니다!)
-MODEL_PATH = "./checkpoints/best_mobilenet_v2_lstm_lr0.00014, bs64_AdamW.pth"
+MODEL_PATH = "./checkpoints/best_resnet18_lstm_lr0.0002, bs128_AdamW.pth"
 
 # 파일명에서 태그 추출
 model_filename = os.path.basename(MODEL_PATH).replace(".pth", "")

@@ -12,7 +12,7 @@ from model import CNNtoRNN
 # 1. 전역 설정
 CONFIG = {
     # 사용할 엔코더 선택: resnet18, mobilenet_v2
-    "encoder_type": "mobilenet_v2", 
+    "encoder_type": "resnet18", 
     
     "vocab_path": "vocab_3.pkl",
     "train_img_dir": "./data/images/train",
@@ -22,9 +22,9 @@ CONFIG = {
     "save_base_dir": "./checkpoints", 
     
     "optimizer_type": "AdamW",
-    "learning_rate": 2e-4,
+    "learning_rate": 1.4e-4,
     "epochs": 30,
-    "batch_size": 128,
+    "batch_size": 64,
     "num_workers": 8,
     "shuffle": True,
     "image_size": (224, 224),
