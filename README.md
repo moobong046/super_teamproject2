@@ -38,7 +38,7 @@
 | **MobileNet V2** | **2.61** | **0.327** | 5.03 |
 | **ViT+GPT2** | 86.83 | 16.980 | 12.64 |
 
-#### 💡 모델 선정 근거 및 분석
+### 💡 모델 선정 근거 및 분석
 * **MobileNet V2의 경량성**: MobileNet V2는 ResNet-18 대비 약 4.4배 적은 파라미터와 **5.5배 낮은 연산량(FLOPs)**을 기록했습니다. 이는 리소스가 제한된 배포 환경(HuggingFace Spaces 등)에서 모델을 구동할 때 메모리 효율성과 비용 측면에서 압도적인 이점을 제공합니다.
 
 * **ViT+GPT2 모델의 한계**: 실험 결과, ViT+GPT2 조합은 문장 생성 성능 면에서는 우수한 결과를 보였으나, MobileNet V2와 비교했을 때 연산량은 약 52배, 지연 시간(Latency)은 약 2.5배 더 높게 측정되었습니다.
@@ -47,16 +47,16 @@
 
 ---
 
-### 1. Training Logs (WandB)
-## 🖼 WandB Visualization
+## Training Logs
+### 🖼 WandB Visualization
 
-### 📊 Loss Curves
+#### Loss Curves
 <p align="center">
   <img src="./graphs/tl_mobilenet.png" width="48%" />
   <img src="./graphs/vl_mobilenet.png" width="48%" />
 </p>
 
-### 📈 Accuracy Trends
+#### Accuracy Trends
 <p align="center">
   <img src="./graphs/va_mobilenet.png" width="80%" />
 </p>
@@ -64,16 +64,18 @@
 * **Loss Curve**: 학습이 진행됨에 따라 Train/Val Loss가 안정적으로 수렴하는 것을 확인할 수 있습니다. Train Loss는 초반에 급격히 하락하다가 후반부로 갈수록 완만하게 수렴하여 모델이 데이터의 패턴을 안정적으로 학습하고 있음을 보여줍니다. Val Loss는 Train Loss와 유사한 궤적을 그리며 하락하여 과적합(Overfitting)이 발생하지 않고 안정적으로 수렴했습니다. 이로 인해 전반적인 성능이 양호함을 확인할 수 있습니다.
 * **Accuracy Curve**: 에폭(Epoch)이 진행됨에 따라 모델이 이미지의 클래스 키워드를 얼마나 잘 맞추는지 보여줍니다. 초반에 급격히 상승한 뒤, 완만한 경사를 그리며 약 85%에 안착하는 모습을 보입니다.
 
+---
+
 성능 분석 스크립트(`analysis_report.py`)를 통해 추출된 클래스별 세부 지표입니다. 캡션 생성 능력(BLEU-4)과 분류 정확도(Accuracy)의 상관관계를 확인할 수 있습니다.
 
-1. 주요 성능 지표 (전체 평균)
+### 1. 주요 성능 지표 (전체 평균)
 
 * 평균 정확도 (Accuracy): 약 88.11%
 * 평균 BLEU-4 Score: 약 0.2731
 * 평균 F1-Score: 약 0.8683
 * 평균 정밀도 (Precision): 약 0.8661
 
-2. BLEU-4 Score 기준 상위 10개 및 하위 10개 클래스 분석(BLEU-4, Accuracy)
+### 2. BLEU-4 Score 기준 상위 10개 및 하위 10개 클래스 분석 (BLEU-4, Accuracy)
 
 #### 🏆 Top 10 Classes (Highest BLEU-4 Score)
 모델이 정답 문장과 가장 유사한 설명을 생성한 클래스들입니다.
