@@ -1,8 +1,0 @@
-myenv/
-__pycache__/
-.vscode/
-
-# 대용량인 이미지와 모델 가중치 폴더(checkpoints) 제외
-data/images/
-checkpoints/
-nltk_data/
