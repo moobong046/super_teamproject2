@@ -1,8 +1,4 @@
-# 📸 Image Captioning Project: MobileNet V2 & LSTM
-
-MobileNet V2와 LSTM을 결합하여 이미지의 내용을 설명하는 문장을 생성하는 인공지능 모델입니다. 데이터 전처리부터 모델 학습, 그리고 성능 분석까지의 전체 파이프라인을 포함합니다.
-
----
+# 📸 Mini-ImageNet+ (MobileNet V2 & LSTM)
 
 ## Project Overview **
 
@@ -14,8 +10,8 @@ MobileNet V2와 LSTM을 결합하여 이미지의 내용을 설명하는 문장�
 모델 학습 및 평가에 사용된 데이터셋의 상세 정보입니다.
 
 * **클래스 구성**: 총 60종
-* **데이터 분할**: 클래스당 240/30/30 (Train/Val/Test) 구성 (8:1:1 비율)
-* **해상도**: 256x256
+* **데이터 분할**: 클래스당 240장/30장/30장 (Train/Val/Test) 구성 (8:1:1 비율)
+* **해상도**: 256x256 pixels
 * **데이터셋**: Classified images dataset (ImageNet 256×256) 일부
 
 ---
@@ -40,72 +36,92 @@ MobileNet V2와 LSTM을 결합하여 이미지의 내용을 설명하는 문장�
 | :--- | :---: | :---: | :---: |
 | **ResNet-18** | 11.44 | 1.824 | 2.06 |
 | **MobileNet V2** | **2.61** | **0.327** | 5.03 |
+| **ViT+GPT2** | 86.83 | 16.980 | 12.64 |
 
-> **Note:** MobileNet V2는 ResNet-18 대비 약 4.4배 적은 파라미터와 5.5배 낮은 연산량을 가집니다. 이는 모델 경량화를 통해 배포 환경(HuggingFace Spaces 등)에서의 리소스 효율성을 높이기 위한 선택입니다.
+#### 💡 모델 선정 근거 및 분석
+* **MobileNet V2의 경량성**: MobileNet V2는 ResNet-18 대비 약 4.4배 적은 파라미터와 **5.5배 낮은 연산량(FLOPs)**을 기록했습니다. 이는 리소스가 제한된 배포 환경(HuggingFace Spaces 등)에서 모델을 구동할 때 메모리 효율성과 비용 측면에서 압도적인 이점을 제공합니다.
+
+* **ViT+GPT2 모델의 한계**: 실험 결과, ViT+GPT2 조합은 문장 생성 성능 면에서는 우수한 결과를 보였으나, MobileNet V2와 비교했을 때 연산량은 약 52배, 지연 시간(Latency)은 약 2.5배 더 높게 측정되었습니다.
+
+* **사용자 고려**: 웹 환경에서 실시간으로 서비스를 이용하는 사용자에게 12.64ms의 지연 시간은 시스템 부하가 커질 경우 성능 저하로 이어질 가능성이 높습니다. 따라서 높은 생성 품질보다 빠른 응답 속도와 서버 안정성을 확보할 수 있는 MobileNet V2가 실 서비스 환경에 더욱 적합하다고 판단하였습니다.
+
+---
 
 ### 1. Training Logs (WandB)
 ## 🖼 WandB Visualization
 
 ### 📊 Loss Curves
 <p align="center">
-  <img src="./graphs/tl_mobile.png" width="48%" />
-  <img src="./graphs/vl_mobile.png" width="48%" />
+  <img src="./graphs/tl_mobilenet.png" width="48%" />
+  <img src="./graphs/vl_mobilenet.png" width="48%" />
 </p>
 
 ### 📈 Accuracy Trends
 <p align="center">
-  <img src="./graphs/va_mobile.png" width="80%" />
+  <img src="./graphs/va_mobilenet.png" width="80%" />
 </p>
 
-* **Loss Curve**: 학습이 진행됨에 따라 Train/Val Loss가 안정적으로 수렴하는 것을 확인할 수 있습니다.
-* **Accuracy Curve**: 에폭(Epoch)이 반복될수록 캡션 생성의 정확도가 향상되는 추세를 보입니다.
+* **Loss Curve**: 학습이 진행됨에 따라 Train/Val Loss가 안정적으로 수렴하는 것을 확인할 수 있습니다. Train Loss는 초반에 급격히 하락하다가 후반부로 갈수록 완만하게 수렴하여 모델이 데이터의 패턴을 안정적으로 학습하고 있음을 보여줍니다. Val Loss는 Train Loss와 유사한 궤적을 그리며 하락하여 과적합(Overfitting)이 발생하지 않고 안정적으로 수렴했습니다. 이로 인해 전반적인 성능이 양호함을 확인할 수 있습니다.
+* **Accuracy Curve**: 에폭(Epoch)이 진행됨에 따라 모델이 이미지의 클래스 키워드를 얼마나 잘 맞추는지 보여줍니다. 초반에 급격히 상승한 뒤, 완만한 경사를 그리며 약 85%에 안착하는 모습을 보입니다.
 
-"analysis_report.py" 실행하여 생성된 파일들을 바탕으로 분석한 결과입니다.
+성능 분석 스크립트(`analysis_report.py`)를 통해 추출된 클래스별 세부 지표입니다. 캡션 생성 능력(BLEU-4)과 분류 정확도(Accuracy)의 상관관계를 확인할 수 있습니다.
 
 1. 주요 성능 지표 (전체 평균)
 
-평균 정확도 (Accuracy): 약 88.11%
-평균 BLEU-4 Score: 약 0.2731
-평균 F1-Score: 약 0.8683
-평균 정밀도 (Precision): 약 0.8661
+* 평균 정확도 (Accuracy): 약 88.11%
+* 평균 BLEU-4 Score: 약 0.2731
+* 평균 F1-Score: 약 0.8683
+* 평균 정밀도 (Precision): 약 0.8661
 
 2. BLEU-4 Score 기준 상위 10개 및 하위 10개 클래스 분석(BLEU-4, Accuracy)
 
-### [Top 10 Classes by BLEU-4 Mean]
+#### 🏆 Top 10 Classes (Highest BLEU-4 Score)
+모델이 정답 문장과 가장 유사한 설명을 생성한 클래스들입니다.
 
-| Class | BLEU-4 Mean | Accuracy |
-| :--- | :---: | :---: |
-| beaker | 0.5266 | 0.9000 |
-| spider | 0.4408 | 0.8667 |
-| cannon | 0.4330 | 0.0000 |
-| bullfrog | 0.4292 | 1.0000 |
-| balloon | 0.4104 | 0.9667 |
-| bald_eagle | 0.4011 | 0.9667 |
-| black_and_gold_garden_spider | 0.3846 | 0.8667 |
-| carpenter_s_kit | 0.3807 | 0.9000 |
-| car_wheel | 0.3786 | 1.0000 |
-| barracouta | 0.3777 | 0.9667 |
-| **TOP 10 AVERAGE** | **0.4163** | **0.8433** |
+| 순위 | 클래스명 (Class) | BLEU-4 Mean | 정확도 (Accuracy) |
+| :--: | :--- | :---: | :---: |
+| 1 | **beaker** | **0.5266** | 0.9000 |
+| 2 | spider | 0.4408 | 0.8667 |
+| 3 | cannon | 0.4330 | 0.0000 |
+| 4 | bullfrog | 0.4292 | 1.0000 |
+| 5 | balloon | 0.4104 | 0.9667 |
+| 6 | bald_eagle | 0.4011 | 0.9667 |
+| 7 | black_and_gold_garden_spider | 0.3846 | 0.8667 |
+| 8 | carpenter_s_kit | 0.3807 | 0.9000 |
+| 9 | car_wheel | 0.3786 | 1.0000 |
+| 10 | barracouta | 0.3777 | 0.9667 |
+| - | **TOP 10 AVERAGE** | **0.4163** | **0.8433** |
 
-### [Bottom 10 Classes by BLEU-4 Mean]
+#### 📉 Bottom 10 Classes (Lowest BLEU-4 Score)
+객체 인식은 잘 되나, 문장 서술 난이도가 높았던 클래스들입니다.
 
-| Class | BLEU-4 Mean | Accuracy |
-| :--- | :---: | :---: |
-| backpack | 0.0741 | 0.9000 |
-| binoculars | 0.0932 | 0.8333 |
-| airedale | 0.1260 | 1.0000 |
-| barrel | 0.1335 | 0.8000 |
-| agama | 0.1336 | 0.9667 |
-| african_chameleon | 0.1494 | 0.9000 |
-| african_crocodile | 0.1628 | 0.9333 |
-| american_staffordshire_terrier | 0.1652 | 0.9333 |
-| admiral | 0.1716 | 1.0000 |
-| african_elephant | 0.1762 | 1.0000 |
-| **BOTTOM 10 AVERAGE** | **0.1386** | **0.9267** |
+| 순위 | 클래스명 (Class) | BLEU-4 Mean | 정확도 (Accuracy) |
+| :--: | :--- | :---: | :---: |
+| 1 | **backpack** | **0.0741** | 0.9000 |
+| 2 | binoculars | 0.0932 | 0.8333 |
+| 3 | airedale | 0.1260 | 1.0000 |
+| 4 | barrel | 0.1335 | 0.8000 |
+| 5 | agama | 0.1336 | 0.9667 |
+| 6 | african_chameleon | 0.1494 | 0.9000 |
+| 7 | african_crocodile | 0.1628 | 0.9333 |
+| 8 | american_staffordshire_terrier | 0.1652 | 0.9333 |
+| 9 | admiral | 0.1716 | 1.0000 |
+| 10 | african_elephant | 0.1762 | 1.0000 |
+| - | **BOTTOM 10 AVERAGE** | **0.1386** | **0.9267** |
 
-3. 결과 요약
-BLEU-4 점수가 높은 상위 10개 클래스의 평균 정확도(84.33%)가 하위 10개 클래스의 평균 정확도(92.67%)보다 낮게 나타났습니다. 이는 모델이 이미지를 정확하게 분류하지 못하더라도, 해당 클래스의 특징적인 문장 구조를 생성하는 능력은 높을 수 있음을 시사합니다.
+---
 
+### 📝 데이터 정밀 분석 결과 및 시사점
+
+1. **지표 간의 역설적 관계**
+   * 분석 결과, **BLEU-4 상위 10개 클래스의 평균 정확도(84.33%)**보다 **하위 10개 클래스의 평균 정확도(92.67%)**가 더 높게 나타났습니다.
+   * 이는 모델이 객체를 정확히 분류(Classification)하더라도, 해당 객체를 묘사하는 문장(Captioning)을 생성하는 난이도는 별개의 영역임을 시사합니다.
+
+2. **문장 생성 메커니즘의 특이점**
+   * **`cannon`** 클래스의 경우 정확도가 **0.0**임에도 BLEU-4 점수는 **0.4330**으로 매우 높습니다.
+   * 모델이 핵심 단어인 'cannon'을 직접적으로 언급하지는 못했으나, 주변 환경이나 상황을 설명하는 문장 구조가 실제 정답과 매우 유사하게 생성되었음을 보여주는 지표입니다.
+
+---
 
 ** Installation **
 
