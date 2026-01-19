@@ -18,8 +18,35 @@
 
 
 ** Performance Summary **
+학습 모델 "MobileNet V2" 로 선정하게 되었고 선정 이유와 분석 내용은 아래 내용을 통해 확인할 수 있습니다.
 
-아래는 "analysis_report.py" 실행하여 생성된 파일들을 바탕으로 분석한 결과입니다.
+### 📊 Model Complexity & Efficiency Comparison
+
+| Model Name | Params (M) | FLOPs (G) | Latency (ms) |
+| :--- | :---: | :---: | :---: |
+| **ResNet-18** | 11.44 | 1.824 | 2.06 |
+| **MobileNet V2** | **2.61** | **0.327** | 5.03 |
+
+> **Note:** MobileNet V2는 ResNet-18 대비 약 4.4배 적은 파라미터와 5.5배 낮은 연산량을 가집니다. 이는 모델 경량화를 통해 배포 환경(HuggingFace Spaces 등)에서의 리소스 효율성을 높이기 위한 선택입니다.
+
+### 1. Training Logs (WandB)
+## 🖼 WandB Visualization
+
+### 📊 Loss Curves
+<p align="center">
+  <img src="./graphs/tl_mobile.png" width="48%" />
+  <img src="./graphs/vl_mobile.png" width="48%" />
+</p>
+
+### 📈 Accuracy Trends
+<p align="center">
+  <img src="./graphs/va_mobile.png" width="80%" />
+</p>
+
+* **Loss Curve**: 학습이 진행됨에 따라 Train/Val Loss가 안정적으로 수렴하는 것을 확인할 수 있습니다.
+* **Accuracy Curve**: 에폭(Epoch)이 반복될수록 캡션 생성의 정확도가 향상되는 추세를 보입니다.
+
+"analysis_report.py" 실행하여 생성된 파일들을 바탕으로 분석한 결과입니다.
 
 1. 주요 성능 지표 (전체 평균)
 
