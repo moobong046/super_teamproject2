@@ -1,24 +1,38 @@
-** Project Overview **
+# 📸 Image Captioning Project: MobileNet V2 & LSTM
+
+MobileNet V2와 LSTM을 결합하여 이미지의 내용을 설명하는 문장을 생성하는 인공지능 모델입니다. 데이터 전처리부터 모델 학습, 그리고 성능 분석까지의 전체 파이프라인을 포함합니다.
+
+---
+
+## Project Overview **
 
 이 프로젝트는 MobileNet V2와 LSTM을 결합하여 이미지의 내용을 설명하는 문장을 생성하는 인공지능 모델입니다. 데이터 전처리부터 모델 학습, 그리고 BLEU 점수 및 Confusion Matrix를 통한 상세 성능 분석까지의 파이프라인을 포함합니다.
 
+---
 
-** Dataset Information **
+## 📊 Dataset Information
+모델 학습 및 평가에 사용된 데이터셋의 상세 정보입니다.
 
-* 클래스 수: 60종
-* 클래스 당 이미지 수: 각 클래스 당 240/30/30(Train/Val/Test)장으로, 8:1:1 비율로 구성
-* 해상도: 256x256
-* 데이터셋: Classified images dataset (ImageNet 256×256) 일부
+* **클래스 구성**: 총 60종
+* **데이터 분할**: 클래스당 240/30/30 (Train/Val/Test) 구성 (8:1:1 비율)
+* **해상도**: 256x256
+* **데이터셋**: Classified images dataset (ImageNet 256×256) 일부
 
+---
+## 🏗 Model Architecture
+효율적인 리소스 사용과 정확한 문장 생성을 위한 구조입니다.
 
-** Model Architecture **
+1.  **Encoder (CNN)**
+    * **MobileNet V2**: 이미지의 고차원 특징 벡터를 추출합니다.
+    * **Linear Layer**: 추출된 벡터를 Decoder의 입력 차원(`embed_size: 300`)으로 변환합니다.
+    * **Batch Normalization**: 학습의 안정성을 높입니다.
+2.  **Decoder (RNN)**
+    * **LSTM**: 이전 단어 정보와 이미지 특징을 결합하여 적절한 단어를 순차적으로 생성합니다.
 
-1) Encoder (CNN): MobileNet V2를 사용하여 이미지의 고차원 특징 벡터를 추출합니다. 추출된 벡터는 Linear 레이어를 거쳐 Decoder의 입력 차원인 embed_size(300)로 변환되고 Batch Normalization을 통해 안정화됩니다.
-2) Decoder (RNN): 이미지 특징 벡터를 첫 번째 입력(초기 상태)으로 받습니다. LSTM 셀은 이전 단어의 정보와 이미지 특징을 결합하여 다음에 올 가장 적절한 단어를 순차적으로 생성합니다.
+---
 
-
-** Performance Summary **
-학습 모델 "MobileNet V2" 로 선정하게 되었고 선정 이유와 분석 내용은 아래 내용을 통해 확인할 수 있습니다.
+## 📈 Performance Summary
+학습 모델로 **MobileNet V2**를 선정한 이유와 분석 결과입니다.
 
 ### 📊 Model Complexity & Efficiency Comparison
 
