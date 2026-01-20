@@ -128,32 +128,37 @@ Mobilenet의 역할은 이미지에서 가장 지배적인 특징ㅇ을 추출�
    * **`cannon`** 클래스의 경우 정확도가 **0.0**임에도 BLEU-4 점수는 **0.4330**으로 매우 높습니다.
    * 모델이 핵심 단어인 'cannon'을 직접적으로 언급하지는 못했으나, 주변 환경이나 상황을 설명하는 문장 구조가 실제 정답과 매우 유사하게 생성되었음을 보여주는 지표입니다.
 
-+bleu 전체평균이 낮은 이유에 대해서 설명 추가하면 좋을 것 같습니다.
--BLUE 점수가 상대적으로 낮게 측정되는 것은 모델의 성능결함이 아닌, MobileNet 기반 디코더는 특정 이미지에 대해 가장 높은 확률을 가진 정형화된 전문 문장을 출력하는 경향이 강해 문구의 다양성은 부족할 수 있으나, 의미적 정확도와 분류의 일관성은 매우높아 사용자에게 신뢰도 높은 정보를 제공.
+3. **낮은 점수 이면의 신뢰성과 일관성**
+   * 전체적인 BLEU 점수가 낮게 측정되는 것은 모델의 성능 결함이라기보다, MobileNet 기반 디코더의 동작 특성에서 기인합니다. 이 모델은 문장의 다양성을 추구하기보다 특정 이미지에 대해 확률적으로 가장 정답에 가까운 정형화된 전문 문장을 출력하는 경향이 강합니다.
+   * 비록 문구의 화려함이나 다양성은 부족할 수 있지만, 분류(Classification) 결과와 캡셔닝(Captioning) 내용 간의 의미적 일관성은 매우 높게 유지됩니다. 이는 사용자에게 모호한 설명 대신 확실하고 검증된 정보를 제공한다는 점에서 실용적 측면의 신뢰도가 높음을 시사합니다.
+
 ---
 
-** Installation **
-
-pip3 install -r requirements.txt
-상세 내용은 "requirements.txt" 참고
-
-
 ## 📂 Project Structure
-<details>
-<summary>구조 자세히 보기</summary>
-
 ```text
 ├── models/
 │   └── blip_v5/
 │       ├── config.json
 │       ├── generation_config.json
-│       └── model.safetensor
+│       ├── model.safetensors
+│       ├── preprocessor_config.json
+│       ├── special_tokens_map.json
+│       ├── tokenizer.json
+│       ├── tokenizer_config.json
+│       └── vocab.txt
+│   └── mobilenet_lstm/
+│       ├── best_model.pth
+│       └── vocab_3.pkl
 ├── src/
 ├── .gitattributes
 ├── Dockerfile
 ├── docker-compose.yml
 ├── requirements.txt
 └── README.md
+
+<details>
+<summary>구조 자세히 보기</summary>
+```text
 
 * vocab.py: 학습 데이터셋을 기반으로 단어 사전("vocab.pkl")을 구축합니다.
 * data_loader.py: 이미지 변형(Augmentation) 및 가변 길이 캡션을 위한 패딩 처리를 담당합니다.
@@ -166,17 +171,23 @@ pip3 install -r requirements.txt
 
 * For User
 
-1) 미리 학습된 모델을 아래 링크를 통해 다운 받으세요.
+1. 미리 학습된 모델을 아래 링크를 통해 다운 받으세요.
 https://drive.google.com/drive/folders/1GOOzF9J4YITn1SimxxeiJzHmtDYS8J6H?usp=sharing
-2) 모델을 로드하여 검증 데이터셋(val)에 대한 상세 보고서를 생성합니다.
-3) "test_inference.py"를 실행하여 테스트 데이터셋(test)에서 서로 다른 20개의 클래스를 임의로 선정하고 각 클래스별 이미지 1장을 추론하여 결과물을 보여주고 이미지 파일로 저장합니다. 
+2. 모델을 로드하여 검증 데이터셋(val)에 대한 상세 보고서를 생성합니다.
+3. "test_inference.py"를 실행하여 테스트 데이터셋(test)에서 서로 다른 20개의 클래스를 임의로 선정하고 각 클래스별 이미지 1장을 추론하여 결과물을 보여주고 이미지 파일로 저장합니다. 
 
 * For Developer
 
-1) 먼저 필요한 라이브러리(requirements.txt)를 설치한 후, 아래 순서대로 스크립트를 실행하면 됩니다.
-2) 학습 데이터에서 빈도수가 높은 단어를 추출하여 사전을 만듭니다. -> "vocab_#.pkl" 생성
-3) 생성된 .pkl 파일의 이름을 "data_loader.py" 의 전역변수(CONFIG) 중 'vocab_path'에 붙여 넣습니다.
-4) "model.py"를 실행한 후, "train.py" 내의 'CONFIG' 에서 최적의 학습에 적합한 변수를 설정한 후 학습을 시작합니다.
-5) 학습이 완료되면 './checkpoints' 경로에 있는 학습된 최적의 모델의 이름을 "analysis_report.py"의 'MODEL_PATH'에 붙여 넣습니다.
-6) 최적의 모델을 로드하여 검증 데이터셋(val)에 대한 상세 보고서를 생성합니다.
-7) "test_inference.py"를 실행하여 테스트 데이터셋(test)에서 서로 다른 20개의 클래스를 임의로 선정하고 각 클래스별 이미지 1장을 추론하여 결과물을 보여주고 이미지 파일로 저장합니다.
+1. 먼저 필요한 라이브러리(requirements.txt)를 설치한 후, 아래 순서대로 스크립트를 실행하면 됩니다.
+2. 학습 데이터에서 빈도수가 높은 단어를 추출하여 사전을 만듭니다. -> "vocab_#.pkl" 생성
+3. 생성된 .pkl 파일의 이름을 "data_loader.py" 의 전역변수(CONFIG) 중 'vocab_path'에 붙여 넣습니다.
+4. "model.py"를 실행한 후, "train.py" 내의 'CONFIG' 에서 최적의 학습에 적합한 변수를 설정한 후 학습을 시작합니다.
+5. 학습이 완료되면 './checkpoints' 경로에 있는 학습된 최적의 모델의 이름을 "analysis_report.py"의 'MODEL_PATH'에 붙여 넣습니다.
+6. 최적의 모델을 로드하여 검증 데이터셋(val)에 대한 상세 보고서를 생성합니다.
+7. "test_inference.py"를 실행하여 테스트 데이터셋(test)에서 서로 다른 20개의 클래스를 임의로 선정하고 각 클래스별 이미지 1장을 추론하여 결과물을 보여주고 이미지 파일로 저장합니다.
+
+
+** Installation **
+
+pip3 install -r requirements.txt
+상세 내용은 "requirements.txt" 참고
