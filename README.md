@@ -138,19 +138,22 @@ pip3 install -r requirements.txt
 상세 내용은 "requirements.txt" 참고
 
 
-** Project Structure **
+## 📂 Project Structure
+<details>
+<summary>구조 자세히 보기</summary>
 
---models
-----blip_v5
-------config.json
-------generation_config.json
-------model.safetensor
-
---src
---.gitattrubutes
---Dockerfile
---docker-compose.yml
---requirements.txt
+```text
+├── models/
+│   └── blip_v5/
+│       ├── config.json
+│       ├── generation_config.json
+│       └── model.safetensor
+├── src/
+├── .gitattributes
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+└── README.md
 
 * vocab.py: 학습 데이터셋을 기반으로 단어 사전("vocab.pkl")을 구축합니다.
 * data_loader.py: 이미지 변형(Augmentation) 및 가변 길이 캡션을 위한 패딩 처리를 담당합니다.
