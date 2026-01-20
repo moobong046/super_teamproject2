@@ -135,7 +135,7 @@ Mobilenet의 역할은 이미지에서 가장 지배적인 특징ㅇ을 추출�
 ---
 
 ## 📂 Project Structure
-```text
+
 ├── models/
 │   └── blip_v5/
 │       ├── config.json
@@ -156,9 +156,6 @@ Mobilenet의 역할은 이미지에서 가장 지배적인 특징ㅇ을 추출�
 ├── requirements.txt
 └── README.md
 
-<details>
-<summary>구조 자세히 보기</summary>
-```text
 
 * vocab.py: 학습 데이터셋을 기반으로 단어 사전("vocab.pkl")을 구축합니다.
 * data_loader.py: 이미지 변형(Augmentation) 및 가변 길이 캡션을 위한 패딩 처리를 담당합니다.
