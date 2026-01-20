@@ -1,13 +1,13 @@
-# 📸 Mini-ImageNet+ (MobileNet V2 & LSTM)
+# Mini-ImageNet+ (MobileNet V2 & LSTM)
 
-## Project Overview
+## 📖 Project Overview
 
-이 프로젝트는 MobileNet V2와 LSTM을 결합하여 이미지의 내용을 설명하는 문장을 생성하는 인공지능 모델입니다. 데이터 전처리부터 모델 학습, 그리고 BLEU 점수 및 Confusion Matrix를 통한 상세 성능 분석까지의 파이프라인을 포함합니다.
+본 프로젝트는 경량령 딥러닝 모델(MobileNet_v2)의 신속한 분류 능력과 차세대 시각-언어 결합 모델(BLIP)의 풍부한 문장 생성 능력을 결합하여, 속도와 정확도의 균형을 맞춘 이미지에 담긴 정보를 문장으로 생성하는 인공지능 모델입니다. 데이터 전처리부터 모델 학습, 그리고 BLEU 점수 및 Confusion Matrix를 통한 상세 성능 분석까지의 파이프라인을 포함합니다.
 
-+blip에 대한 설명이 추가되면 좋을것 같습니다. gradio기준
--가벼운 MobileNet이 핵심 객체를 빠르게 파악하여'가이드라인'을 제시하면, 대형 생성 모델(BLIP)가 이를 정제하는 구조를 취함으로써 정확도와 속도의 균형을 달성.
-Mobilenet의 역할은 이미지에서 가장 지배적인 특징ㅇ을 추출하여 전문 용어(vocab)기반의 객체명을 확정. BLIP의 역할은 추출된 키워드를 바탕으로 문법적 유창성을 더하여 풍부한 묘사생성
-이로 인해 상호 검증 및 텍스트 정제를함. 모델 리드가 추출한 키워드와 BLIP의 생성 문장을 대조하여MobileNet이 제공하는 높은 분류 정확도(Acc 88.11%)를 기준점으로 삼아, 객체 정보가 불일치할 경우 모델 리드의 데이터를 우선순위로 하여 환각(Hallucination) 현상을 필터링함.
+MobileNet은 이미지에서 가장 지배적인 특징을 신속하게 추출하고, Vocab 기반의 객체명을 확정하여 문장의 뼈대를 제공합니다. BLIP는 MobileNet이 추출한 핵심 키워드를 바탕으로 문법적 유창성을 더해, 사용자에게 전달될 풍부한 묘사 문장을 생성합니다.
+
+모델이 생성한 문장과 MobileNet의 분류 결과를 대조합니다. 만약 정보가 불일치할 경우, 높은 분류 정확도(88.11%)를 가진 MobileNet의 데이터를 우선순위로 두어 대형 모델 특유의 환각 현상을 필터링합니다.
+특정 도감 데이터의 정확성을 극대화했기에, 학습되지 않은 객체(Out-of-Distribution)에 대해서는 생성이 제한될 수 있습니다. 이는 전문 분야에서의 고도의 신뢰성을 보장하기 위한 특화된 설계의 결과입니다.
 
 ---
 
@@ -52,8 +52,8 @@ Mobilenet의 역할은 이미지에서 가장 지배적인 특징ㅇ을 추출�
 
 ---
 
-## Training Logs
-### 🖼 WandB Visualization
+## 📝 Training Logs
+### WandB Visualization
 
 #### Loss Curves
 <p align="center">
@@ -118,7 +118,7 @@ Mobilenet의 역할은 이미지에서 가장 지배적인 특징ㅇ을 추출�
 
 ---
 
-### 📝 데이터 정밀 분석 결과 및 시사점
+### 🗒️ 데이터 정밀 분석 결과 및 시사점
 
 1. **지표 간의 역설적 관계**
    * 분석 결과, **BLEU-4 상위 10개 클래스의 평균 정확도(84.33%)**보다 **하위 10개 클래스의 평균 정확도(92.67%)**가 더 높게 나타났습니다.
@@ -136,55 +136,46 @@ Mobilenet의 역할은 이미지에서 가장 지배적인 특징ㅇ을 추출�
 
 ## 📂 Project Structure
 
+```text
+.
 ├── models/
-│   └── blip_v5/
-│       ├── config.json
-│       ├── generation_config.json
-│       ├── model.safetensors
-│       ├── preprocessor_config.json
-│       ├── special_tokens_map.json
-│       ├── tokenizer.json
-│       ├── tokenizer_config.json
-│       └── vocab.txt
-│   └── mobilenet_lstm/
+│   ├── blip_v5/               # BLIP 모델 관련 설정 및 가중치
+│   │   ├── config.json
+│   │   ├── model.safetensors
+│   │   └── ... (tokenizer, vocab 등)
+│   └── mobilenet_lstm/        # MobileNet + LSTM 가이드 모델
 │       ├── best_model.pth
 │       └── vocab_3.pkl
-├── src/
-├── .gitattributes
-├── Dockerfile
-├── docker-compose.yml
-├── requirements.txt
+├── src/                       # 소스 코드
+│   └── app.py
+├── .gitattributes             # LFS 관리 설정
+├── Dockerfile                 # Docker 이미지 생성 설정
+├── docker-compose.yml         # 멀티 컨테이너 실행 설정
+├── requirements.txt           # 라이브러리
 └── README.md
+```
 
+---
 
-* vocab.py: 학습 데이터셋을 기반으로 단어 사전("vocab.pkl")을 구축합니다.
-* data_loader.py: 이미지 변형(Augmentation) 및 가변 길이 캡션을 위한 패딩 처리를 담당합니다.
-* model.py: Encoder, Decoder 및 통합 모델(CNNtoRNN)이 정의되어 있습니다.
-* train.py: 모델 학습을 진행하며, WandB를 통해 손실률과 정확도를 모니터링합니다.
-* analysis_report.py: 학습된 모델을 평가하여 BLEU4 점수, F1-Score, Confusion Matrix 등을 생성합니다.
+## 🚀 Execution Steps
 
+### **For User: 온라인 데모 확인**
+복잡한 설치 없이 아래의 **HuggingFace Spaces** 링크를 통해 즉시 모델을 체험해 볼 수 있습니다.
 
-** Execution Steps **
+1. **데모 링크 접속**: [HuggingFace Spaces - Super Team Project](https://huggingface.co/spaces/mo0hyun/super_teamproject2)
+2. **이미지 업로드**: 분석을 원하는 이미지 파일을 업로드 영역에 드래그하거나 클릭하여 선택합니다.
+3. **결과 확인**: **Submit** 버튼을 클릭하면 모델이 생성한 신뢰도 높은 캡션이 우측 결과창에 표시됩니다.
 
-* For User
+---
 
-1. 미리 학습된 모델을 아래 링크를 통해 다운 받으세요.
-https://drive.google.com/drive/folders/1GOOzF9J4YITn1SimxxeiJzHmtDYS8J6H?usp=sharing
-2. 모델을 로드하여 검증 데이터셋(val)에 대한 상세 보고서를 생성합니다.
-3. "test_inference.py"를 실행하여 테스트 데이터셋(test)에서 서로 다른 20개의 클래스를 임의로 선정하고 각 클래스별 이미지 1장을 추론하여 결과물을 보여주고 이미지 파일로 저장합니다. 
+### **For Developer: 로컬 환경 구축 및 배포**
+로컬 환경에서 코드 수정 및 테스트를 위해 환경을 구축하는 방법입니다.
 
-* For Developer
-
-1. 먼저 필요한 라이브러리(requirements.txt)를 설치한 후, 아래 순서대로 스크립트를 실행하면 됩니다.
-2. 학습 데이터에서 빈도수가 높은 단어를 추출하여 사전을 만듭니다. -> "vocab_#.pkl" 생성
-3. 생성된 .pkl 파일의 이름을 "data_loader.py" 의 전역변수(CONFIG) 중 'vocab_path'에 붙여 넣습니다.
-4. "model.py"를 실행한 후, "train.py" 내의 'CONFIG' 에서 최적의 학습에 적합한 변수를 설정한 후 학습을 시작합니다.
-5. 학습이 완료되면 './checkpoints' 경로에 있는 학습된 최적의 모델의 이름을 "analysis_report.py"의 'MODEL_PATH'에 붙여 넣습니다.
-6. 최적의 모델을 로드하여 검증 데이터셋(val)에 대한 상세 보고서를 생성합니다.
-7. "test_inference.py"를 실행하여 테스트 데이터셋(test)에서 서로 다른 20개의 클래스를 임의로 선정하고 각 클래스별 이미지 1장을 추론하여 결과물을 보여주고 이미지 파일로 저장합니다.
-
-
-** Installation **
-
-pip3 install -r requirements.txt
-상세 내용은 "requirements.txt" 참고
+1. **준비 사항**: 시스템에 [Docker](https://www.docker.com/)가 설치되어 있어야 합니다.
+2. **파일 구성**: `models/`, `src/` 폴더와 `Dockerfile`, `docker-compose.yml`, `requirements.txt`를 하나의 작업 폴더에 준비합니다.
+3. **컨테이너 빌드 및 실행**: 터미널(CMD)에서 해당 폴더로 이동 후 아래 명령어를 실행합니다.
+   ```bash
+   docker-compose up --build
+4. **로컬 접속**: 빌드가 완료되면 웹 브라우저를 열고 다음 주소에 접속합니다.
+   주소: http://localhost:7860
+5. **결과 확인**: **Submit** 버튼을 클릭하면 모델이 생성한 신뢰도 높은 캡션이 우측 결과창에 표시됩니다.
