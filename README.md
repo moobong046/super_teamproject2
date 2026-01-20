@@ -1,6 +1,6 @@
 # 📸 Mini-ImageNet+ (MobileNet V2 & LSTM)
 
-## Project Overview **
+## Project Overview
 
 이 프로젝트는 MobileNet V2와 LSTM을 결합하여 이미지의 내용을 설명하는 문장을 생성하는 인공지능 모델입니다. 데이터 전처리부터 모델 학습, 그리고 BLEU 점수 및 Confusion Matrix를 통한 상세 성능 분석까지의 파이프라인을 포함합니다.
 
@@ -125,14 +125,13 @@
 
 ---
 
-## Installation
+** Installation **
 
 pip3 install -r requirements.txt
 상세 내용은 "requirements.txt" 참고
 
----
 
-## Structure
+** Project Structure **
 
 --models
 ----blip_v5
