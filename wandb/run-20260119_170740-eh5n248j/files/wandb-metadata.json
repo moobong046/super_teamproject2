@@ -1,0 +1,37 @@
+{
+  "os": "macOS-26.2-arm64-arm-64bit",
+  "python": "CPython 3.9.6",
+  "startedAt": "2026-01-19T08:07:40.634728Z",
+  "program": "/Users/daniel/project/train.py",
+  "codePath": "train.py",
+  "codePathLocal": "train.py",
+  "git": {
+    "remote": "https://github.com/jink221/super_teamproject2.git",
+    "commit": "a21b7825ede7d60f344a90af8cf2d2f7a6183d38"
+  },
+  "email": "kjink9921@gmail.com",
+  "root": "/Users/daniel/project",
+  "host": "Jinkyuui-MacBookPro.local",
+  "executable": "/Users/daniel/project/myenv/bin/python",
+  "cpu_count": 12,
+  "cpu_count_logical": 12,
+  "disk": {
+    "/": {
+      "total": "494384795648",
+      "used": "226883092480"
+    }
+  },
+  "memory": {
+    "total": "25769803776"
+  },
+  "apple": {
+    "name": "Apple M4 Pro",
+    "ecpuCores": 4,
+    "pcpuCores": 8,
+    "gpuCores": 16,
+    "memoryGb": 24,
+    "swapTotalBytes": "7516192768",
+    "ramTotalBytes": "25769803776"
+  },
+  "writerId": "th1fadsl3m9xwy46ogd4vl0pahrlkdxb"
+}
